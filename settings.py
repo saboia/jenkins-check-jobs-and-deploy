@@ -1,9 +1,9 @@
 
 #your jenkins url with port(if you have)
-jenkins_url = 'http://localhost:8080'
+JENKINS_URL = 'http://localhost:8080'
 
 #command line for deploy
-deploy_command = 'cap project deploy'
+DEPLOY_COMMAND = 'cap project deploy'
 
 #active jenkins job to validate deploy
-jobs_to_validate = [ 'Job1','Job2']
+JOBS_TO_VALIDATE = [ 'Job1','Job2']

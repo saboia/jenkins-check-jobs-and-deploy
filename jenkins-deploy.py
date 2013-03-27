@@ -7,34 +7,47 @@ Classe feita para implementar o continous delivery consultando os jobs no jenkin
 '''
 import os, sys, atexit, getopt, time, logging, commands
 from jenkinsapi.api import get_latest_build
-import ConfigParser
-from settings import *
+import settings
 
 def usage():
     print "Jenkinks Continous Delivery:"
     print "Go to settings.py and review your conf!"
-
+    print "usage: jenkins-deploy.py [--command=COMMAND_TO_DEPLOY]"
 
 def main():
     
-    if not jenkins_url or not jobs_to_validate or not deploy_command:
+    try:
+        optlists, command = getopt.getopt(sys.argv[1:], "hc", ["help", "command="])
+    except getopt.GetoptError, err:
+        print str(err) # will print something like "option -a not recognized"
+        usage()
+        sys.exit(2)
+        
+    for opt, value in optlists:
+        if opt in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif opt in ("-c", "--command"):
+            settings.DEPLOY_COMMAND = value
+        
+    if not settings.JENKINS_URL or not settings.JOBS_TO_VALIDATE or not settings.DEPLOY_COMMAND:
         usage()
         sys.exit()
     
     deploy = True
     
     print('Verificando se os jobs estão verdes e aptos para deploy...')
-    for job in jobs_to_validate:
-        result = get_latest_build(jenkins_url, job)
+    for job in settings.JOBS_TO_VALIDATE:
+        result = get_latest_build(settings.JENKINS_URL, job)
         print('%s - %s' % (result.is_good() ,job))
         if not result.is_good():
             deploy = False
             
     if deploy:
         print('Deploy aprovado!')
-        print('Executando o deploy com o comando: %s' % deploy_command)
+        print('Executando o deploy com o comando: %s' % settings.DEPLOY_COMMAND)
         print('Em execução...')
-        run_command = commands.getstatusoutput(deploy_command)
+        run_command = commands.getstatusoutput(settings.DEPLOY_COMMAND)
         print('Resultado do deploy: %s' % run_command[0])
         print('Log do deploy: %s' % run_command[1])
         
