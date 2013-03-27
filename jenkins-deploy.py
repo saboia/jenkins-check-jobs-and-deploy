@@ -56,6 +56,8 @@ def main():
         else:
             print('Deploy executado com sucesso!')
             return True
+    else:
+        raise Exception("Existem Jobs importantes com problemas. Deploy não autorizado.")
     
 if __name__ == "__main__":
     main()
